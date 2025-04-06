@@ -9,7 +9,12 @@ class Calculator extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 128, 151, 255),
         elevation: 0.0,
-        leading: Icon(Icons.arrow_back_ios_new_rounded),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () {
+            Navigator.pop(context); // برگشت به صفحه قبلی
+          },
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
