@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_2/calculator.dart';
+import 'package:go_router/go_router.dart';
 
-class LoginPage extends StatelessWidget {
-  final _formKey = GlobalKey<FormState>();
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _phoneNumberController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +49,36 @@ class LoginPage extends StatelessWidget {
                           maxLength: 10,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[۰-۹0-9]'),
+                            ), // فقط اعداد فارسی یا انگلیسی
                           ],
                           decoration: InputDecoration(
                             labelText: "شماره تلفن",
                             border: OutlineInputBorder(),
                           ),
+                          onChanged: (value) {
+                            // تبدیل اعداد فارسی به انگلیسی
+                            String english = value
+                                .replaceAll('۰', '0')
+                                .replaceAll('۱', '1')
+                                .replaceAll('۲', '2')
+                                .replaceAll('۳', '3')
+                                .replaceAll('۴', '4')
+                                .replaceAll('۵', '5')
+                                .replaceAll('۶', '6')
+                                .replaceAll('۷', '7')
+                                .replaceAll('۸', '8')
+                                .replaceAll('۹', '9');
+                            if (english != value) {
+                              _phoneNumberController.value = TextEditingValue(
+                                text: english,
+                                selection: TextSelection.collapsed(
+                                  offset: english.length,
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ),
                     ],
@@ -62,29 +98,22 @@ class LoginPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       // زمانی که دکمه ورود فشرده می‌شود
-                      String phoneNumber =_phoneNumberController.text;
+                      String phoneNumber = _phoneNumberController.text;
                       String password = _passwordController.text;
 
-                      if (phoneNumber.isNotEmpty && password.isNotEmpty) {
-                        // انتقال به صفحه بعدی
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Calculator(),
-                          ),
-                        );
+                      if (phoneNumber.isNotEmpty &&
+                          password.isNotEmpty &&
+                          phoneNumber.length == 10) {
+                        context.go('/main-page');
                       } else {
-                        // اگر فیلدها خالی بودند، پیامی نمایش می‌دهیم
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(
-                              'لطفا فیلد ها را پر کنید',
-                            ),
+                            content: Text('لطفا فیلد ها را با دقت پر کنید'),
                           ),
                         );
                       }
                     },
-                    child: Text('ورود به ماشین حساب'),
+                    child: Text('ورود'),
                   ),
                 ],
               ),

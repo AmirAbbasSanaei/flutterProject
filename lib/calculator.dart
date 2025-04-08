@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class Calculator extends StatelessWidget {
   const Calculator({super.key});
@@ -12,7 +13,7 @@ class Calculator extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () {
-            Navigator.pop(context); // برگشت به صفحه قبلی
+            context.go('/main-page'); // برگشت به صفحه اصلی
           },
         ),
         title: Row(
