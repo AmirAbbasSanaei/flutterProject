@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_application_2/auth_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthBloc>().state;
+
+    String phone = '';
+    if (authState is AuthSuccess) {
+      phone = authState.phoneNumber;
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 128, 151, 255),
@@ -22,9 +30,17 @@ class MainPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 115, 187, 247),
               ),
-              child: Text(
-                'منوی کناری',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+              child: BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  String phone = '';
+                  if (state is AuthSuccess) {
+                    phone = state.phoneNumber;
+                  }
+                  return Text(
+                    'خوش آمدید, $phone',
+                    style: TextStyle(color: Colors.white, fontSize: 24),
+                  );
+                },
               ),
             ),
             ListTile(
@@ -41,17 +57,19 @@ class MainPage extends StatelessWidget {
                 context.go('/setting');
               },
             ),
+            // خروج
             ListTile(
               leading: Icon(Icons.logout),
               title: Text('خروج'),
               onTap: () {
-                context.go('/');
+                context.read<AuthBloc>().add(LogoutEvent());
+                context.go('/'); 
               },
             ),
           ],
         ),
       ),
-      body: Text("Main Page"),
+      body: Center(child: Text("خوش آمدید $phone")),
     );
   }
 }

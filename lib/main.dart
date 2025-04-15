@@ -3,10 +3,12 @@ import 'package:flutter_application_2/calculator.dart';
 import 'package:flutter_application_2/login.dart';
 import 'package:flutter_application_2/main_page.dart';
 import 'package:flutter_application_2/setting.dart';
+import 'package:flutter_application_2/auth_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-void main() => runApp(const MyApp());
-final GoRouter _router = GoRouter(
+void main() => runApp(BlocProvider(create: (_) => AuthBloc(), child: MyApp()));
+final GoRouter goRouter  = GoRouter(
   initialLocation: '/',
   routes: [
     GoRoute(path: '/', builder: (context, state) => LoginPage()),
@@ -22,6 +24,6 @@ class MyApp extends StatelessWidget {
   @override
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(routerConfig: _router);
+    return MaterialApp.router(routerConfig: goRouter);
   }
 }

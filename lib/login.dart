@@ -1,23 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_2/calculator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_application_2/auth_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
+class LoginPage extends StatelessWidget {
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _phoneNumberController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,94 +19,101 @@ class _LoginPageState extends State<LoginPage> {
           child: FractionallySizedBox(
             alignment: Alignment.center,
             widthFactor: 1,
-            // heightFactor: 0.5,
-            child: Container(
-              child: Column(
-                // phone number section
-                children: [
-                  Row(
-                    children: [
-                      // +98
-                      Container(
-                        padding: EdgeInsets.only(bottom: 20.0),
-                        child: Text('+98', style: TextStyle(fontSize: 18)),
-                      ),
-                      SizedBox(width: 8),
-                      // phoneNumber Input
-                      Expanded(
-                        child: TextField(
-                          controller: _phoneNumberController,
-                          maxLength: 10,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'[۰-۹0-9]'),
-                            ), // فقط اعداد فارسی یا انگلیسی
-                          ],
-                          decoration: InputDecoration(
-                            labelText: "شماره تلفن",
-                            border: OutlineInputBorder(),
-                          ),
-                          onChanged: (value) {
-                            // تبدیل اعداد فارسی به انگلیسی
-                            String english = value
-                                .replaceAll('۰', '0')
-                                .replaceAll('۱', '1')
-                                .replaceAll('۲', '2')
-                                .replaceAll('۳', '3')
-                                .replaceAll('۴', '4')
-                                .replaceAll('۵', '5')
-                                .replaceAll('۶', '6')
-                                .replaceAll('۷', '7')
-                                .replaceAll('۸', '8')
-                                .replaceAll('۹', '9');
-                            if (english != value) {
-                              _phoneNumberController.value = TextEditingValue(
-                                text: english,
-                                selection: TextSelection.collapsed(
-                                  offset: english.length,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  // password section
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: "رمز ورود",
-                      border: OutlineInputBorder(),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(bottom: 20.0),
+                      child: Text('+98', style: TextStyle(fontSize: 18)),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  // button
-                  ElevatedButton(
-                    onPressed: () {
-                      // زمانی که دکمه ورود فشرده می‌شود
-                      String phoneNumber = _phoneNumberController.text;
-                      String password = _passwordController.text;
-
-                      if (phoneNumber.isNotEmpty &&
-                          password.isNotEmpty &&
-                          phoneNumber.length == 10) {
-                        context.go('/main-page');
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('لطفا فیلد ها را با دقت پر کنید'),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _phoneNumberController,
+                        maxLength: 10,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[۰-۹0-9]'),
                           ),
-                        );
-                      }
-                    },
-                    child: Text('ورود'),
+                        ],
+                        decoration: InputDecoration(
+                          labelText: "شماره تلفن",
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (value) {
+                          String english = value
+                              .replaceAll('۰', '0')
+                              .replaceAll('۱', '1')
+                              .replaceAll('۲', '2')
+                              .replaceAll('۳', '3')
+                              .replaceAll('۴', '4')
+                              .replaceAll('۵', '5')
+                              .replaceAll('۶', '6')
+                              .replaceAll('۷', '7')
+                              .replaceAll('۸', '8')
+                              .replaceAll('۹', '9');
+                          if (english != value) {
+                            _phoneNumberController.value = TextEditingValue(
+                              text: english,
+                              selection: TextSelection.collapsed(
+                                offset: english.length,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: "رمز ورود",
+                    border: OutlineInputBorder(),
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height: 20),
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthSuccess) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('ورود موفق ✅')));
+                      context.go('/main-page');
+                    } else if (state is AuthFailure) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(state.error)));
+                    }
+                  },
+                  builder: (context, state) {
+                    return ElevatedButton(
+                      onPressed:
+                          state is AuthLoading
+                              ? null
+                              : () {
+                                String phoneNumber =
+                                    _phoneNumberController.text;
+                                String password = _passwordController.text;
+                                context.read<AuthBloc>().add(
+                                  LoginEvent(phoneNumber, password),
+                                );
+                              },
+                      child:
+                          state is AuthLoading
+                              ? CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              )
+                              : Text('ورود'),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),
