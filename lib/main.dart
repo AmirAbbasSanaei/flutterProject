@@ -4,11 +4,20 @@ import 'package:flutter_application_2/login.dart';
 import 'package:flutter_application_2/main_page.dart';
 import 'package:flutter_application_2/setting.dart';
 import 'package:flutter_application_2/auth_bloc.dart';
+import 'package:flutter_application_2/sidebar_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-void main() => runApp(BlocProvider(create: (_) => AuthBloc(), child: MyApp()));
-final GoRouter goRouter  = GoRouter(
+void main() => runApp(
+  MultiBlocProvider(
+    providers: [
+      BlocProvider(create: (_) => AuthBloc()),
+      BlocProvider(create: (_) => SidebarBloc()),
+    ],
+    child: const MyApp(),
+  ),
+);
+final GoRouter goRouter = GoRouter(
   initialLocation: '/',
   routes: [
     GoRoute(path: '/', builder: (context, state) => LoginPage()),

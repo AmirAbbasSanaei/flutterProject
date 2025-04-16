@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// --- Events ---
+///Events
 abstract class AuthEvent {}
 
 class LoginEvent extends AuthEvent {
@@ -10,7 +10,7 @@ class LoginEvent extends AuthEvent {
   LoginEvent(this.phoneNumber, this.password);
 }
 
-/// --- States ---
+///States
 abstract class AuthState {}
 
 class AuthInitial extends AuthState {}
@@ -29,7 +29,7 @@ class AuthFailure extends AuthState {
   AuthFailure(this.error);
 }
 
-/// --- Bloc ---
+///Bloc
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
     on<LogoutEvent>((event, emit) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/base_page.dart';
 import 'package:go_router/go_router.dart';
 
 class Calculator extends StatelessWidget {
@@ -6,49 +7,8 @@ class Calculator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 128, 151, 255),
-        elevation: 0.0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () {
-            context.go('/main-page'); // برگشت به صفحه اصلی
-          },
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Calculator",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(width: 8),
-            Icon(
-              Icons.calculate,
-              size: 32,
-              color: const Color.fromARGB(255, 12, 104, 180),
-            ),
-          ],
-        ),
-        actions: [
-          Icon(
-            Icons.add_alert,
-            size: 22,
-            color: const Color.fromARGB(255, 12, 104, 180),
-          ),
-          SizedBox(width: 16),
-          Icon(
-            Icons.more_horiz,
-            size: 22,
-            color: const Color.fromARGB(255, 12, 104, 180),
-          ),
-          SizedBox(width: 8),
-        ],
-      ),
+    return BasePage(
+      title: "ماشین حساب",
       body: Padding(
         padding: EdgeInsets.all(8),
         child: Column(
